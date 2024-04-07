@@ -31,20 +31,22 @@ end
 -- dont error out if module not found
 -- @param module_name - string module name
 -- @return module tbl if found else nil
-M.safe_require = function(module_name)
+local safe_require = function(module_name)
     local status_ok, mod = pcall(require, module_name)
     local ret = status_ok and mod or nil
     return ret
 end
 
+-- load nvim icons
+local nvim_icons = safe_require("nvim-web-devicons")
+
 -- get icon for file from nvim-web-devicons plugin
 -- @param fpath fullpath of the file
 -- @return icon if found else "" (empty string)
 M.get_icon = function(fpath)
-    local file_name, file_ext = vim.fn.fnamemodify(fpath, ":t"), vim.fn.fnamemodify(fpath, ":e")
-    local nvim_icons = M.safe_require("nvim-web-devicons")
     local icon = ""
     if nvim_icons then
+        local file_name, file_ext = vim.fn.fnamemodify(fpath, ":t"), vim.fn.fnamemodify(fpath, ":e")
         icon = nvim_icons.get_icon(file_name, file_ext, { default = true })
     end
     return icon
