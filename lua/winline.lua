@@ -12,20 +12,6 @@ local config = require('winline.config')
 local utils = require('winline.utils')
 local sep_m = require('winline.seperators') -- seperators module
 
--- highlight lookup table for active and inactive
-local hl_lookup = {
-    active = {
-        title = "WinLineTitle",
-        fill = "WinLineFill",
-        buf = "WinLineBuf",
-    },
-    inactive = {
-        title = "WinLineInactiveTitle",
-        fill = "WinLineInactiveFill",
-        buf = "WinLineInactiveBuf",
-    }
-}
-
 -- get icon given win id
 -- @param win_id - window id
 -- @return icon if enabled and available
@@ -37,20 +23,58 @@ local get_icon = function (win_id)
     return icon
 end
 
+-- callback for win close user command
+-- @param data from user command - this is assumed to contain win_id in args[1]
+local winline_close_win_callback = function(data)
+    if utils.get_active_win_count() > 1 then
+        local win_id = tonumber(data["fargs"][1])
+        vim.api.nvim_win_hide(win_id)
+    else
+        vim.api.nvim_echo( {"WinLine.nvim: Cannout close last window"}, true )
+    end
+end
+
+-- setup callbacks - window close click
+local setup_close_func = function()
+    M.is_tabclick_supported = vim.fn.has('tablinat')
+    -- I couldn't find anyway to switch to tab using tab_id in vim script, so had to create a user
+    -- command and call that with vim script.
+    if M.is_tabclick_supported then
+        -- vim func
+        vim.cmd(
+            [[function! WinLineCloseFunc(win_id, clicks, button, mod)
+            execute 'WinLineCloseCallUsrCmd' a:win_id
+            endfunction]]
+        )
+        -- User command calling lua callback(?)
+        vim.api.nvim_create_user_command('WinLineCloseCallUsrCmd', winline_close_win_callback,
+            {nargs = "?", desc = 'Topline,nvim: On click callback user command'})
+    end
+end
+
 -- composes winbar for the given window
 -- @param win_id window id
 -- @is_cur_wid (boolen) true if window is the focused one
 -- @return string | composed winbar
 local compose_winbar = function(win_id, is_cur_wid)
     local ret = ""
-    local hl = is_cur_wid and hl_lookup.active or hl_lookup.inactive
+    local hl = is_cur_wid and config.hl_lookup.active or config.hl_lookup.inactive
     local icon = get_icon(win_id)
     ret = table.concat({
-        "%#", hl.title, "# ", icon, " %<%t%m%r ", sep_m.get_seperator(hl.title, hl.fill, 1),
+        "%#", hl.title, "# ", icon, " %<%t%m%r ",
     })
+    -- check click support, non empty close icon and check if more than one window active
+    if M.is_winclick_support and M.config.close_icon ~= "" and utils.get_active_win_count() > 1 then
+        -- add close button
+        local close_call =  string.format('%%%d@WinLineCloseFunc@', win_id)
+        ret = table.concat({ ret, "%#", hl.close, '# ', close_call, M.config.close_icon, " ",
+            sep_m.get_seperator(hl.close, hl.fill, 1),  "%X ",})
+    else
+        ret = ret .. sep_m.get_seperator(hl.title, hl.fill, 1)
+    end
     if M.config.display_buf_no then
         ret = table.concat({ ret, "%=", sep_m.get_seperator(hl.buf, hl.fill, 2),
-           "%#", hl.buf, "# B:%n " })
+           "%#", hl.buf, "# B:%n ", })
     end
     return ret
 end
@@ -76,9 +100,10 @@ end
 -- create winbar aucmds
 -- @params cfg winbar config tbl
 local setup_winbar = function()
+    M.is_winclick_support = vim.fn.has('tablinat')
     local _au = vim.api.nvim_create_augroup('WinLine.nvim', { clear = true })
     -- Winbar
-    vim.api.nvim_create_autocmd({'WinEnter', 'WinLeave', 'BufWinEnter', 'BufWinLeave'}, {
+    vim.api.nvim_create_autocmd({'WinEnter', 'WinLeave', 'BufWinEnter', 'BufWinLeave', 'WinResized'}, {
         pattern = "*",
         callback = generate_winbar,
         group = _au,
@@ -98,7 +123,8 @@ M.setup = function (cfg)
     sep_m.initialize_seperators(M.config.seperators, utils.setup_highlights)
     -- setup winbar
     setup_winbar()
-
+    -- close button setup
+    setup_close_func()
 end
 
 return M

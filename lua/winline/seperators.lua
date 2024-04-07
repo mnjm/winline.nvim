@@ -14,8 +14,10 @@ M.seperators = nil
 local hl_transitions = {
     {'WinLineTitle', 'WinLineFill'},
     {'WinLineBuf', 'WinLineFill'},
+    {'WinLineCloseButton', 'WinLineFill'},
     {'WinLineInactiveTitle', 'WinLineInactiveFill'},
     {'WinLineInactiveBuf', 'WinLineInactiveFill'},
+    {'WinLineInactiveCloseButton', 'WinLineInactiveFill'},
 }
 
 -- helper func to check if seperators are empty
