@@ -1,10 +1,14 @@
-# WinLine.nvim
+# [WinLine.nvim](https://github.com/mnjm/winline.nvim)
 
-**Minimal winbar plugin with 
-- different colors for active and inactive windows
-- icons + close button
+**Minimal winbar plugin with**
+- Different highlights for active and inactive windows
+- Icons and Interactive close button
 
 ![ss](https://github.com/mnjm/github-media-repo/blob/2c134ceca60b81b359f3c40bd8847e4ba2408d19/winline.nvim/ss.png)
+
+**My other plugins**
+- [BottomLine.nvim](https://github.com/mnjm/bottomline.nvim) - Statusline plugin
+- [TopLine.nvim](https://github.com/mnjm/topline.nvim) - Tabline plugin
 
 ## Installation
 
@@ -30,12 +34,12 @@ use {
 }
 ```
 ## Setup
-To start winline add below line in your neovim config
+To start winline, add below line in your neovim config
 ```lua
 require("winline").setup()
 ```
 ### Customization
-You can pass custom config to override default configs to setup call, for
+You can pass custom config to override default configs to setup call, for ex
 ```lua
 require('winline').setup({
     enable = true,
@@ -70,3 +74,4 @@ require('winline').setup({
     }
 })
 ```
+
