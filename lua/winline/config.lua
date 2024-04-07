@@ -28,7 +28,7 @@ local default_config = {
         WinLineInactiveTitle        = {fg="#282c34", bg="#585858", bold=true },
         WinLineInactiveFill         = {link = 'TabLineFill'},
         WinLineInactiveBuf          = {link = 'TabLine'},
-        WinLineInactiveCloseButton  = {fg="#d70000", bg="#bcbcbc", bold=true},
+        WinLineInactiveCloseButton  = {fg="#d70000", bg="#444444", bold=true},
     }
 }
 
