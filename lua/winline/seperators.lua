@@ -60,6 +60,7 @@ end
 -- @param (optional) for_winbar boolean - true when prep for winbar
 -- @return string | seperator with highlights added
 M.get_seperator = function(hl_1, hl_2, idx)
+    if not M.enabled then return "" end
     local hl_grp = "%#" .. string.format("%s_2_%s", hl_1, hl_2) .. "#"
     return hl_grp .. M.seperators[idx]
 end

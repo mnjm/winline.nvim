@@ -70,3 +70,5 @@ M.get_active_win_count = function(tab_no)
     end
     return count
 end
+
+return M

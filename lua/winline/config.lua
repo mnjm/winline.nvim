@@ -17,7 +17,7 @@ local default_config = {
     enable_icons = false,
     display_buf_no = true,      -- add winbar buffer?
     always_show = false,        -- if false, will display only when more than 1 window in tabpage
-    seperators = { pre = '', post = '' },
+    seperators = { '', '' },
     -- Winbar highlights
     highlights = {
         -- active
@@ -27,7 +27,7 @@ local default_config = {
         -- inative
         WinLineInactiveTitle   = {link = 'TabLine'},
         WinLineInactiveFill    = {link = 'TabLineFill'},
-        WinLineInactiveBuf     = {link = 'TabLineSel'},
+        WinLineInactiveBuf     = {link = 'TabLine'},
     }
 }
 

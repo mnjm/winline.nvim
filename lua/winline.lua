@@ -12,28 +12,49 @@ local config = require('winline.config')
 local utils = require('winline.utils')
 local sep_m = require('winline.seperators') -- seperators module
 
--- winbar generator
--- @return winbar string
+-- highlight lookup table for active and inactive
+local hl_lookup = {
+    active = {
+        title = "WinLineTitle",
+        fill = "WinLineFill",
+        buf = "WinLineBuf",
+    },
+    inactive = {
+        title = "WinLineInactiveTitle",
+        fill = "WinLineInactiveFill",
+        buf = "WinLineInactiveBuf",
+    }
+}
+
+-- composes winbar for the given window
+-- @param win_id window id
+-- @is_cur_wid (boolen) true if window is the focused one
+-- @return string | composed winbar
+local compose_winbar = function(win_id, is_cur_wid)
+    local ret = ""
+    local hl = is_cur_wid and hl_lookup.active or hl_lookup.inactive
+    local icon = utils.get_icon(vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win_id)))
+    ret = table.concat({
+        "%#", hl.title, "# ", icon, " %<%t%m%r ", sep_m.get_seperator(hl.title, hl.fill, 1),
+    })
+    if M.config.display_buf_no then
+        ret = table.concat({ ret, "%=", sep_m.get_seperator(hl.buf, hl.fill, 2),
+           "%#", hl.buf, "# B:%n " })
+    end
+    return ret
+end
+
+-- generates and registers winbar for all window
 local generate_winbar = function()
-    local winbar = ""
-    if M.config.always_show or utils.get_active_win_count() > 1 then -- if more than 1 fixed windows in the current tabpage
-        local sep = sep_m.get_seperator("WinLineTitle", "WinLineFill", 1)
-        winbar = table.concat({
-            "%#WinLineTitle# %<%t%m%r ",
-            sep,
-            "%#WinLineFill#"
-        })
-        if M.config.display_buf_no then
-            sep = sep_m.get_seperator("WinLineBuf", "WinLineFill", 2)
-            winbar = winbar .. table.concat({
-                "%=",
-                sep,
-                "%#WinLineBuf# B:%n ",
-            })
+    local win_id_l = vim.api.nvim_tabpage_list_wins(0)
+    local cur_win = vim.api.nvim_tabpage_get_win(0)
+    for _, win_id in ipairs(win_id_l) do
+        if utils.is_window_fixed(win_id) then
+            local winbar = compose_winbar(win_id, win_id == cur_win)
+            -- set winbar localy
+            vim.api.nvim_set_option_value("winbar", winbar, { win = win_id })
         end
     end
-    -- set winbar
-    vim.opt.winbar = winbar
 end
 
 -- create winbar aucmds
@@ -49,15 +70,16 @@ local setup_winbar = function()
     })
 end
 
+-- setup call
 M.setup = function (cfg)
     M.config = config.init_config(cfg)
     -- initialize winline
     -- if not enabled
-    if not M.enable then return end
+    if not M.config.enable then return end
     -- setup highlights
-    utils.setup_highlights(cfg.highlights)
+    utils.setup_highlights(M.config.highlights)
     -- initialize seperators
-    sep_m.initialize_seperators(cfg.seperators, utils.setup_highlights)
+    sep_m.initialize_seperators(M.config.seperators, utils.setup_highlights)
     -- setup winbar
     setup_winbar()
 
