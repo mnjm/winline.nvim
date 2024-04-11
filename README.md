@@ -4,11 +4,13 @@
 - Different highlights for active and inactive windows
 - Icons and Interactive close button
 
-![ss](https://github.com/mnjm/github-media-repo/blob/2c134ceca60b81b359f3c40bd8847e4ba2408d19/winline.nvim/ss.png)
+![demo](https://github.com/mnjm/github-media-repo/blob/main/winline.nvim/demo.gif?raw=true)
 
 **My other plugins**
 - [BottomLine.nvim](https://github.com/mnjm/bottomline.nvim) - Statusline plugin
 - [TopLine.nvim](https://github.com/mnjm/topline.nvim) - Tabline plugin
+
+***
 
 ## Installation
 
@@ -33,6 +35,9 @@ use {
     dependencies = { 'nvim-tree/nvim-web-devicons' }
 }
 ```
+
+***
+
 ## Setup
 To start winline, add below line in your neovim config
 ```lua
@@ -47,10 +52,11 @@ require('winline').setup({
     enable_icons = true,
     close_icon = "󱎘",
     display_buf_no = true,
-    seperators = { '',  '' },
+    -- seperators = { '',  '' },
+    seperators = { '',  '' },
 })
 ```
-Available configuration options
+Available default configuration options
 ```lua
 require('winline').setup({
     enable = true,
@@ -75,3 +81,9 @@ require('winline').setup({
 })
 ```
 
+***
+
+![ss](https://github.com/mnjm/github-media-repo/blob/main/winline.nvim/ss.png?raw=true)
+
+***
+License MIT
