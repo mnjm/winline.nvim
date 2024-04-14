@@ -37,7 +37,7 @@ end
 -- setup callbacks - window close click
 local setup_close_func = function()
     M.is_tabclick_supported = vim.fn.has('tablinat')
-    -- I couldn't find anyway to switch to tab using tab_id in vim script, so had to create a user
+    -- I couldn't find anyway to switch to tab using win_id in vim script, so had to create a user
     -- command and call that with vim script.
     if M.is_tabclick_supported then
         -- vim func
@@ -103,7 +103,7 @@ local setup_winbar = function()
     M.is_winclick_support = vim.fn.has('tablinat')
     local _au = vim.api.nvim_create_augroup('WinLine.nvim', { clear = true })
     -- Winbar
-    vim.api.nvim_create_autocmd({'WinEnter', 'WinLeave', 'BufWinEnter', 'BufWinLeave', 'WinResized'}, {
+    vim.api.nvim_create_autocmd({'WinEnter', 'WinLeave', 'BufWinEnter', 'BufWinLeave', 'WinResized', 'DirChanged'}, {
         pattern = "*",
         callback = generate_winbar,
         group = _au,
