@@ -72,6 +72,7 @@ local compose_winbar = function(win_id, is_cur_wid)
     else
         ret = ret .. sep_m.get_seperator(hl.title, hl.fill, 1)
     end
+    ret = table.concat({ ret, "%#", hl.fill, "#" })
     if M.config.display_buf_no then
         ret = table.concat({ ret, "%=", sep_m.get_seperator(hl.buf, hl.fill, 2),
            "%#", hl.buf, "# B:%n ", })
