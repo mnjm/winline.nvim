@@ -28,6 +28,7 @@ end
 local winline_close_win_callback = function(data)
     if utils.get_active_win_count() > 1 then
         local win_id = tonumber(data["fargs"][1])
+---@diagnostic disable-next-line: param-type-mismatch
         vim.api.nvim_win_hide(win_id)
     else
         vim.api.nvim_echo( {"WinLine.nvim: Cannout close last window"}, true )
