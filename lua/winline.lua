@@ -53,6 +53,16 @@ local setup_close_func = function()
     end
 end
 
+-- get_window_label for given window
+-- @param win_id window id
+-- return string | window label
+local function get_window_label(win_id)
+    local buf = vim.api.nvim_win_get_buf(win_id)
+    local ret = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":t")
+    if ret:len() == 0 then ret = vim.bo[buf].filetype end
+    return ret
+end
+
 -- composes winbar for the given window
 -- @param win_id window id
 -- @is_cur_wid (boolen) true if window is the focused one
@@ -62,13 +72,13 @@ local compose_winbar = function(win_id, is_cur_wid)
     local hl = is_cur_wid and config.hl_lookup.active or config.hl_lookup.inactive
     local icon = get_icon(win_id)
     ret = table.concat({
-        "%#", hl.title, "# ", icon, " %<%t%m%r ",
+        "%#", hl.title, "# ", icon, " ", get_window_label(win_id), " "
     })
     -- check click support, non empty close icon and check if more than one window active
     if M.is_winclick_support and M.config.close_icon ~= "" and utils.get_active_win_count() > 1 then
         -- add close button
         local close_call =  string.format('%%%d@WinLineCloseFunc@', win_id)
-        ret = table.concat({ ret, "%#", hl.close, '# ', close_call, M.config.close_icon, " ",
+        ret = table.concat({ ret, "%#", hl.close, '# ', close_call, M.config.close_icon,
             sep_m.get_seperator(hl.close, hl.fill, 1),  "%X ",})
     else
         ret = ret .. sep_m.get_seperator(hl.title, hl.fill, 1)
